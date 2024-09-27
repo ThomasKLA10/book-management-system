@@ -4,73 +4,62 @@ from models import Book
 
 app = Flask(__name__)
 
-# Route 1: Home Page ("/")
+# Home Page: Lists all books
 @app.route('/')
 def home():
-    books = session.query(Book).all()  # Query all books from the database
-    return render_template('home.html', books=books)  # Render the home page with books list
+    books = session.query(Book).all()  # Get all books
+    return render_template('home.html', books=books)  # Show home page with book list
 
-
-
-# Route 2: Add Book ("/add")
+# Add a Book: Show form and handle book creation
 @app.route('/add', methods=['GET', 'POST'])
 def add_book():
     if request.method == 'POST':
-        # Get form data and create a new book object
-        title = request.form['title']
-        author = request.form['author']
-        genre = request.form.get('genre')
-        publication_date = request.form.get('publication_date')
-        description = request.form.get('description')
-
+        # Create a new book with form data and save to DB
         new_book = Book(
-            title=title,
-            author=author,
-            genre=genre,
-            publication_date=publication_date,
-            description=description
+            title=request.form['title'],
+            author=request.form['author'],
+            genre=request.form.get('genre'),
+            publication_date=request.form.get('publication_date'),
+            description=request.form.get('description')
         )
-        session.add(new_book)  # Add the new book to the session
-        session.commit()  # Commit the changes to the database
-
-        return redirect(url_for('home'))  # Redirect to the home page after adding
+        session.add(new_book)
+        session.commit()
+        return redirect(url_for('home'))
     return render_template('add_book.html')  # Show the add book form
 
-# Route 3: Edit Book ("/edit/<int:id>")
+# Edit a Book: Show edit form and update book info
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_book(id):
-    book = session.query(Book).get(id)  # Get the book by id
+    book = session.query(Book).get(id)  # Find the book by ID
     if request.method == 'POST':
-        # Update the book's attributes based on form data
+        # Update book with form data and save changes
         book.title = request.form['title']
         book.author = request.form['author']
         book.genre = request.form.get('genre')
         book.publication_date = request.form.get('publication_date')
         book.description = request.form.get('description')
+        session.commit()
+        return redirect(url_for('home'))
+    return render_template('edit_book.html', book=book)  # Show edit form pre-filled with current book data
 
-        session.commit()  # Commit the changes to the database
-        return redirect(url_for('home'))  # Redirect to the home page after editing
-    return render_template('edit_book.html', book=book)  # Show the edit book form with current data
-
-# Route 4: Delete Book ("/delete/<int:id>")
+# Delete a Book: Remove book by ID
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_book(id):
-    book = session.query(Book).get(id)  # Get the book by id
-    session.delete(book)  # Delete the book from the database
-    session.commit()  # Commit the changes to the database
-    return redirect(url_for('home'))  # Redirect to the home page after deletion
+    book = session.query(Book).get(id)  # Find book by ID
+    session.delete(book)
+    session.commit()
+    return redirect(url_for('home'))
 
-# Route 5: Search Books ("/search")
+# Search Books: Search by title or author
 @app.route('/search', methods=['GET', 'POST'])
 def search_books():
     if request.method == 'POST':
-        search_query = request.form['search_query']  # Get the search query from the form
-        # Search for books by title or author
+        search_query = request.form['search_query']
         books = session.query(Book).filter(
             (Book.title.ilike(f'%{search_query}%')) | (Book.author.ilike(f'%{search_query}%'))
-        ).all()
-        return render_template('search_results.html', books=books)  # Render search results page
-    return render_template('search_form.html')  # Render search form if GET request
+        ).all()  # Find books that match the search query
+        return render_template('search_results.html', books=books)
+    return render_template('search_form.html')  # Show search form
 
 if __name__ == '__main__':
     app.run(debug=True)
