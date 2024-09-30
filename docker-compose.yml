@@ -1,15 +1,6 @@
 version: '3.8'
+
 services:
-  web:
-    build: .
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/book_management
-      - FLASK_APP=app  # Specify your app module
-      - FLASK_RUN_HOST=0.0.0.0  # Ensure this line is included
   db:
     image: postgres:13
     environment:
@@ -17,9 +8,23 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: book_management
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: flask run --host=0.0.0.0
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
