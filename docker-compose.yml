@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   web:
     build: .
@@ -7,7 +8,8 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/book_management
-
+      - FLASK_APP=app  # Specify your app module
+      - FLASK_RUN_HOST=0.0.0.0  # Ensure this line is included
   db:
     image: postgres:13
     environment:
@@ -15,7 +17,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: book_management
     ports:
-      - "5433:5433"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
