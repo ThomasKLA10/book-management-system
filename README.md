@@ -1,7 +1,10 @@
 # Book Management System
 
 ## Overview
-The Book Management System is a web application that allows users to manage their book collections effectively. Users can perform CRUD (Create, Read, Update, Delete) operations on book entries, making it easy to maintain and organize their libraries. The application is built using Flask and utilizes a PostgreSQL database for data storage.
+This Book Management System allows users to manage a collection of books by adding, editing, and deleting books, authors,
+and genres. It includes features for tracking the number of books in each genre and by each author. The application is built
+using Flask, SQLAlchemy, and PostgreSQL, and can be easily deployed using Docker.
+
 
 ## Project Setup Instructions
 
@@ -11,37 +14,39 @@ The Book Management System is a web application that allows users to manage thei
 
 ### Running the Application Locally
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/book-management-system.git
-   cd book-management-system
-2. **Build and run the application using Docker Compose:**
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/book-management-system.git
+    ```
 
+2. Navigate to the project directory:
     ```bash
-     docker-compose up --build
-3. **Access the application: Open your web browser and navigate to http://localhost:5000.**
+    cd book-management-system
+    ```
 
-### Docker Commands
+3. Start the application using Docker:
+    ```bash
+    docker-compose up --build
+    ```
 
-- To start the application:
+4. Run database migrations:
     ```bash
-    docker-compose up
-   
-- To stop the application:
-    ```bash
-    docker-compose down
-  
-- To view logs:
-    ```bash
-    docker-compose logs
+    docker exec -it your-container-name flask db upgrade
+    ```
+
+5. Access the application at `http://localhost:5000`.
   
 ### Features
-- Add new books to the collection.
-- View a list of all books.
-- Edit existing book details.
-- Delete books from the collection.
-- Input validation for all forms.
+- Manage books, authors, and genres.
+- Automatically track and display the number of books for each genre and author.
+- Easy-to-use interface for adding, editing, and deleting records.
+- Search functionality to find books by title or author.
 
-### Known Issues
-- The application may not handle concurrent database access properly under heavy load.
+### Usage:
+- To add a new book, click on "Add Book" and fill in the form with the book's title, author, genre, and other details.
+- To edit or delete a book, click the corresponding buttons next to each book in the list.
+- Authors and genres can be managed from their respective pages.
+
+
+
 
